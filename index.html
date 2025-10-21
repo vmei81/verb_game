@@ -1,333 +1,323 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2709
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+<html>
+<style>
+    /* 1. Estilos del cuerpo, ajustados para Moodle */
+    /* Quitamos el flex/full screen que choca con Moodle */
+    body {
+        /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; */
+        background-color: #f0f4f8;
+        color: #333;
+        margin: 0;
+        /* Estilos originales comentados para evitar conflicto: */
+        /* display: flex; */ 
+        /* justify-content: center; */
+        /* align-items: center; */
+        /* min-height: 100vh; */
+        /* overflow: hidden; */
+        padding: 20px; /* Añadir un poco de padding */
+    }
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="es">\
-<head>\
-    <meta charset="UTF-8">\
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
-    <title>Juego de Verbos Progresivo</title>\
-    \
-    <style>\
-        body \{\
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;\
-            background-color: #f0f4f8;\
-            color: #333;\
-            display: flex;\
-            justify-content: center;\
-            align-items: center;\
-            min-height: 100vh;\
-            margin: 0;\
-            overflow: hidden;\
-        \}\
-\
-        #gameContainer \{\
-            width: 90%;\
-            max-width: 800px;\
-            background-color: #ffffff;\
-            border-radius: 12px;\
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);\
-            padding: 24px;\
-            text-align: center;\
-        \}\
-\
-        h1 \{\
-            color: #2c3e50;\
-            margin-top: 0;\
-        \}\
-        \
-        /* Nuevo: Contador de Progreso */\
-        #progressCounter \{\
-            font-size: 1.1rem;\
-            color: #555;\
-            font-weight: 500;\
-            margin-bottom: 10px;\
-        \}\
-\
-        #playAudioBtn \{\
-            background-color: #3498db;\
-            color: white;\
-            border: none;\
-            padding: 12px 20px;\
-            font-size: 1.5rem;\
-            border-radius: 8px;\
-            cursor: pointer;\
-            transition: background-color 0.3s ease;\
-            min-width: 180px; /* Ancho para "Jugar de Nuevo" */\
-        \}\
-\
-        #playAudioBtn:hover \{\
-            background-color: #2980b9;\
-        \}\
-        \
-        /* Estilo para el bot\'f3n de "Jugar de Nuevo" */\
-        #playAudioBtn.play-again \{\
-            background-color: #2ecc71;\
-            font-size: 1.2rem;\
-        \}\
-        #playAudioBtn.play-again:hover \{\
-            background-color: #27ae60;\
-        \}\
-\
-\
-        #feedback \{\
-            margin: 16px 0;\
-            font-size: 1.2rem;\
-            font-weight: bold;\
-            min-height: 1.5em;\
-        \}\
-\
-        #feedback.correct \{\
-            color: #2ecc71;\
-        \}\
-\
-        #feedback.wrong \{\
-            color: #e74c3c;\
-        \}\
-\
-        #gameArea \{\
-            position: relative;\
-            width: 100%;\
-            height: 350px;\
-            background: #ecf0f1;\
-            border-radius: 8px;\
-            border: 2px dashed #bdc3c7;\
-            overflow: hidden;\
-            margin-top: 20px;\
-            \
-            /* Para el mensaje de fin de juego */\
-            display: flex;\
-            justify-content: center;\
-            align-items: center;\
-        \}\
-        \
-        #endGameMessage \{\
-            text-align: center;\
-            color: #2c3e50;\
-        \}\
-\
-        .card \{\
-            position: absolute;\
-            background-color: #ffffff;\
-            border: 2px solid #3498db;\
-            padding: 15px 25px;\
-            border-radius: 8px;\
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\
-            cursor: pointer;\
-            font-size: 1.1rem;\
-            font-weight: 600;\
-            color: #2c3e50;\
-            user-select: none;\
-            animation: float 8s ease-in-out infinite;\
-        \}\
-\
-        .card:hover \{\
-            transform: scale(1.1);\
-            border-color: #2980b9;\
-            z-index: 10;\
-        \}\
-\
-        @keyframes float \{\
-            0% \{\
-                transform: translateY(0px) rotate(-1deg);\
-            \}\
-            50% \{\
-                transform: translateY(-20px) rotate(2deg);\
-            \}\
-            100% \{\
-                transform: translateY(0px) rotate(-1deg);\
-            \}\
-        \}\
-    </style>\
-    </head>\
-<body>\
-\
-    <main id="gameContainer">\
-        <h1>Escucha y Encuentra el Verbo</h1>\
-        <p id="progressCounter"></p> <button id="playAudioBtn" title="Escuchar">\uc0\u55357 \u56586 </button>\
-        \
-        <div id="feedback">\'a1Presiona \uc0\u55357 \u56586  para empezar!</div>\
-        \
-        <div id="gameArea">\
-            </div>\
-    </main>\
-\
-    <script>\
-        // 1. LISTA MAESTRA DE VERBOS\
-        const masterVerbs = [\
-            'eat', 'dance', 'paint', 'send', 'plant', 'walk', 'study', 'play', 'go', 'travel',\
-            'ask', 'accept', 'answer', 'win', 'catch', 'open', 'think about', 'wash', 'show', 'give'\
-        ];\
-        \
-        const totalVerbs = masterVerbs.length;\
-\
-        // 2. ELEMENTOS DEL DOM\
-        const gameArea = document.getElementById('gameArea');\
-        const playAudioBtn = document.getElementById('playAudioBtn');\
-        const feedback = document.getElementById('feedback');\
-        const progressCounter = document.getElementById('progressCounter'); // NUEVO\
-\
-        // 3. ESTADO DEL JUEGO\
-        let shuffledVerbs = []; // NUEVO: Este ser\'e1 nuestro "mazo"\
-        let correctAnswer = '';\
-        let synth = window.speechSynthesis;\
-        let isGameActive = true; \
-        let isGameStarted = false; // NUEVO: Para controlar el inicio\
-\
-        // 4. FUNCI\'d3N PARA REPRODUCIR AUDIO\
-        function speak(text) \{\
-            if (synth.speaking) \{\
-                synth.cancel();\
-            \}\
-            const utterance = new SpeechSynthesisUtterance(text);\
-            utterance.lang = 'en-US';\
-            utterance.rate = 0.9;\
-            synth.speak(utterance);\
-        \}\
-\
-        // 5. NUEVA FUNCI\'d3N: INICIAR JUEGO\
-        function startGame() \{\
-            isGameStarted = true;\
-            isGameActive = true;\
-            feedback.textContent = 'Escucha con atenci\'f3n...';\
-            feedback.className = '';\
-            \
-            // Barajamos el mazo de verbos (Algoritmo Fisher-Yates simple)\
-            shuffledVerbs = [...masterVerbs].sort(() => 0.5 - Math.random());\
-            \
-            // Cambiamos el bot\'f3n a "repetir audio"\
-            playAudioBtn.textContent = '\uc0\u55357 \u56586 ';\
-            playAudioBtn.title = 'Escuchar de nuevo';\
-            playAudioBtn.className = '';\
-            playAudioBtn.onclick = () => \{\
-                if (correctAnswer) speak(correctAnswer);\
-            \};\
-\
-            nextRound(); // Empezamos la primera ronda\
-        \}\
-\
-        // 6. FUNCI\'d3N PARA CREAR UNA NUEVA RONDA (MODIFICADA)\
-        function nextRound() \{\
-            // 6.1. Comprobar si el mazo est\'e1 vac\'edo\
-            if (shuffledVerbs.length === 0) \{\
-                return endGame(); // \'a1Se acab\'f3 el juego!\
-            \}\
-\
-            isGameActive = true;\
-            gameArea.innerHTML = ''; // Limpia tarjetas anteriores\
-            \
-            // 6.2. Sacar el siguiente verbo del mazo\
-            correctAnswer = shuffledVerbs.pop(); \
-            \
-            // 6.3. Actualizar contador\
-            let currentVerbNumber = totalVerbs - shuffledVerbs.length;\
-            progressCounter.textContent = `Verbo $\{currentVerbNumber\} de $\{totalVerbs\}`;\
-            feedback.textContent = 'Escucha con atenci\'f3n...';\
-            feedback.className = '';\
-\
-            // 6.4. Crear lista de opciones (1 correcta, 4 incorrectas)\
-            let options = [correctAnswer];\
-            \
-            // Usamos la lista MAESTRA para los distractores\
-            let distractors = [...masterVerbs].filter(v => v !== correctAnswer);\
-            distractors.sort(() => 0.5 - Math.random());\
-            \
-            for (let i = 0; i < 4; i++) \{\
-                options.push(distractors[i]);\
-            \}\
-            options.sort(() => 0.5 - Math.random()); // Mezclamos opciones finales\
-\
-            // 6.5. Crear las tarjetas en pantalla\
-            createCards(options);\
-\
-            // 6.6. Reproducir el audio\
-            setTimeout(() => speak(correctAnswer), 500);\
-        \}\
-\
-        // 7. FUNCI\'d3N PARA CREAR TARJETAS (Sin cambios)\
-        function createCards(options) \{\
-            const gameRect = gameArea.getBoundingClientRect();\
-            options.forEach(verb => \{\
-                const card = document.createElement('div');\
-                card.className = 'card';\
-                card.textContent = verb;\
-                card.dataset.verb = verb;\
-                \
-                const randX = Math.random() * (gameRect.width - 150) + 20;\
-                const randY = Math.random() * (gameRect.height - 100) + 20;\
-                card.style.left = `$\{randX\}px`;\
-                card.style.top = `$\{randY\}px`;\
-                card.style.animationDelay = `$\{Math.random() * 8\}s`;\
-                card.style.animationDuration = `$\{Math.random() * 4 + 6\}s`;\
-\
-                card.addEventListener('click', checkAnswer);\
-                gameArea.appendChild(card);\
-            \});\
-        \}\
-\
-        // 8. FUNCI\'d3N PARA COMPROBAR RESPUESTA (MODIFICADA)\
-        function checkAnswer(event) \{\
-            if (!isGameActive) return;\
-\
-            const clickedCard = event.target;\
-            const clickedVerb = clickedCard.dataset.verb;\
-\
-            if (clickedVerb === correctAnswer) \{\
-                isGameActive = false;\
-                feedback.textContent = `\'a1Correcto! "$\{correctAnswer\}"`;\
-                feedback.className = 'correct';\
-                clickedCard.style.borderColor = '#2ecc71';\
-                clickedCard.style.backgroundColor = '#e8f8ef';\
-                \
-                // Llamamos a la siguiente ronda\
-                setTimeout(nextRound, 1500);\
-\
-            \} else \{\
-                feedback.textContent = '\'a1Incorrecto! Intenta de nuevo.';\
-                feedback.className = 'wrong';\
-                clickedCard.style.borderColor = '#e74c3c';\
-                setTimeout(() => \{\
-                    if (clickedCard.style.borderColor === 'rgb(231, 76, 60)') \{ // Solo si sigue rojo\
-                         clickedCard.style.borderColor = '#3498db';\
-                    \}\
-                \}, 1000);\
-            \}\
-        \}\
-        \
-        // 9. NUEVA FUNCI\'d3N: TERMINAR JUEGO\
-        function endGame() \{\
-            isGameActive = false;\
-            isGameStarted = false;\
-            correctAnswer = '';\
-            \
-            // Limpiar \'e1rea y mostrar mensaje final\
-            gameArea.innerHTML = `\
-                <div id="endGameMessage">\
-                    <h2>\'a1Felicidades!</h2>\
-                    <p>Completaste los $\{totalVerbs\} verbos.</p>\
-                </div>\
-            `;\
-            \
-            progressCounter.textContent = `Juego Terminado`;\
-            feedback.textContent = '\'a1Excelente trabajo!';\
-            feedback.className = 'correct';\
-            \
-            // Configurar el bot\'f3n para "Jugar de Nuevo"\
-            playAudioBtn.textContent = 'Jugar de Nuevo';\
-            playAudioBtn.title = 'Jugar de Nuevo';\
-            playAudioBtn.className = 'play-again';\
-            playAudioBtn.onclick = startGame; // Al hacer clic, se reinicia el juego\
-        \}\
-\
-        // 10. INICIALIZACI\'d3N DEL JUEGO\
-        \
-        // Asignamos la funci\'f3n de INICIO al bot\'f3n.\
-        playAudioBtn.onclick = startGame;\
-\
-    </script>\
-    </body>\
-</html>}
+    /* 2. Estilos del Contenedor del Juego (esenciales) */
+    #gameContainer {
+        width: 100%; /* Cambiar de 90% a 100% o mantener el 90% */
+        max-width: 800px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        text-align: center;
+        margin: 0 auto; /* Centrar el contenedor */
+    }
+
+    h1 {
+        color: #2c3e50;
+        margin-top: 0;
+    }
+
+    #progressCounter {
+        font-size: 1.1rem;
+        color: #555;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    #playAudioBtn {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        font-size: 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        min-width: 180px;
+    }
+
+    #playAudioBtn:hover {
+        background-color: #2980b9;
+    }
+
+    #playAudioBtn.play-again {
+        background-color: #2ecc71;
+        font-size: 1.2rem;
+    }
+    #playAudioBtn.play-again:hover {
+        background-color: #27ae60;
+    }
+
+
+    #feedback {
+        margin: 16px 0;
+        font-size: 1.2rem;
+        font-weight: bold;
+        min-height: 1.5em;
+    }
+
+    #feedback.correct {
+        color: #2ecc71;
+    }
+
+    #feedback.wrong {
+        color: #e74c3c;
+    }
+
+    /* 3. Estilos del Área de Juego (esenciales para el posicionamiento) */
+    #gameArea {
+        position: relative;
+        width: 100%;
+        height: 350px;
+        background: #ecf0f1;
+        border-radius: 8px;
+        border: 2px dashed #bdc3c7;
+        overflow: hidden;
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    #endGameMessage {
+        text-align: center;
+        color: #2c3e50;
+    }
+
+    .card {
+        position: absolute;
+        background-color: #ffffff;
+        border: 2px solid #3498db;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        user-select: none;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .card:hover {
+        transform: scale(1.1);
+        border-color: #2980b9;
+        z-index: 10;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0px) rotate(-1deg);
+        }
+        50% {
+            transform: translateY(-20px) rotate(2deg);
+        }
+        100% {
+            transform: translateY(0px) rotate(-1deg);
+        }
+    }
+</style>
+
+<main id="gameContainer">
+    <h1>Escucha y Encuentra el Verbo</h1>
+    <p id="progressCounter"></p> 
+    <button id="playAudioBtn" title="Escuchar">
+        🔊 
+    </button>
+    
+    <div id="feedback">¡Presiona 🔊 para empezar!</div>
+    
+    <div id="gameArea">
+    </div>
+</main>
+
+<script>
+    // 1. LISTA MAESTRA DE VERBOS
+    const masterVerbs = [
+        'eat', 'dance', 'paint', 'send', 'plant', 'walk', 'study', 'play', 'go', 'travel',
+        'ask', 'accept', 'answer', 'win', 'catch', 'open', 'think about', 'wash', 'show', 'give'
+    ];
+    
+    const totalVerbs = masterVerbs.length;
+
+    // 2. ELEMENTOS DEL DOM
+    const gameArea = document.getElementById('gameArea');
+    const playAudioBtn = document.getElementById('playAudioBtn');
+    const feedback = document.getElementById('feedback');
+    const progressCounter = document.getElementById('progressCounter');
+
+    // 3. ESTADO DEL JUEGO
+    let shuffledVerbs = [];
+    let correctAnswer = '';
+    let synth = window.speechSynthesis;
+    let isGameActive = true; 
+    let isGameStarted = false;
+
+    // 4. FUNCIÓN PARA REPRODUCIR AUDIO
+    function speak(text) {
+        if (synth.speaking) {
+            synth.cancel();
+        }
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        synth.speak(utterance);
+    }
+
+    // 5. NUEVA FUNCIÓN: INICIAR JUEGO
+    function startGame() {
+        isGameStarted = true;
+        isGameActive = true;
+        feedback.textContent = 'Escucha con atención...';
+        feedback.className = '';
+        
+        // Barajamos el mazo de verbos (Algoritmo Fisher-Yates simple)
+        shuffledVerbs = [...masterVerbs].sort(() => 0.5 - Math.random());
+        
+        // Cambiamos el botón a "repetir audio"
+        playAudioBtn.textContent = '🔊';
+        playAudioBtn.title = 'Escuchar de nuevo';
+        playAudioBtn.className = '';
+        playAudioBtn.onclick = () => {
+            if (correctAnswer) speak(correctAnswer);
+        };
+
+        nextRound(); // Empezamos la primera ronda
+    }
+
+    // 6. FUNCIÓN PARA CREAR UNA NUEVA RONDA (MODIFICADA)
+    function nextRound() {
+        // 6.1. Comprobar si el mazo está vacío
+        if (shuffledVerbs.length === 0) {
+            return endGame(); // ¡Se acabó el juego!
+        }
+
+        isGameActive = true;
+        gameArea.innerHTML = ''; // Limpia tarjetas anteriores
+        
+        // 6.2. Sacar el siguiente verbo del mazo
+        correctAnswer = shuffledVerbs.pop(); 
+        
+        // 6.3. Actualizar contador
+        let currentVerbNumber = totalVerbs - shuffledVerbs.length;
+        progressCounter.textContent = `Verbo ${currentVerbNumber} de ${totalVerbs}`;
+        feedback.textContent = 'Escucha con atención...';
+        feedback.className = '';
+
+        // 6.4. Crear lista de opciones (1 correcta, 4 incorrectas)
+        let options = [correctAnswer];
+        
+        // Usamos la lista MAESTRA para los distractores
+        let distractors = [...masterVerbs].filter(v => v !== correctAnswer);
+        distractors.sort(() => 0.5 - Math.random());
+        
+        for (let i = 0; i < 4; i++) {
+            options.push(distractors[i]);
+        }
+        options.sort(() => 0.5 - Math.random()); // Mezclamos opciones finales
+
+        // 6.5. Crear las tarjetas en pantalla
+        createCards(options);
+
+        // 6.6. Reproducir el audio
+        setTimeout(() => speak(correctAnswer), 500);
+    }
+
+    // 7. FUNCIÓN PARA CREAR TARJETAS
+    function createCards(options) {
+        const gameRect = gameArea.getBoundingClientRect();
+        options.forEach(verb => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.textContent = verb;
+            card.dataset.verb = verb;
+            
+            // Aseguramos que la posición sea correcta DENTRO de gameArea
+            const randX = Math.random() * (gameRect.width - 150) + 20;
+            const randY = Math.random() * (gameRect.height - 100) + 20;
+            card.style.left = `${randX}px`;
+            card.style.top = `${randY}px`;
+            card.style.animationDelay = `${Math.random() * 8}s`;
+            card.style.animationDuration = `${Math.random() * 4 + 6}s`;
+
+            card.addEventListener('click', checkAnswer);
+            gameArea.appendChild(card);
+        });
+    }
+
+    // 8. FUNCIÓN PARA COMPROBAR RESPUESTA
+    function checkAnswer(event) {
+        if (!isGameActive) return;
+
+        const clickedCard = event.target;
+        const clickedVerb = clickedCard.dataset.verb;
+
+        if (clickedVerb === correctAnswer) {
+            isGameActive = false;
+            feedback.textContent = `¡Correcto! "${correctAnswer}"`;
+            feedback.className = 'correct';
+            clickedCard.style.borderColor = '#2ecc71';
+            clickedCard.style.backgroundColor = '#e8f8ef';
+            
+            // Llamamos a la siguiente ronda
+            setTimeout(nextRound, 1500);
+
+        } else {
+            feedback.textContent = '¡Incorrecto! Intenta de nuevo.';
+            feedback.className = 'wrong';
+            clickedCard.style.borderColor = '#e74c3c';
+            setTimeout(() => {
+                if (clickedCard.style.borderColor === 'rgb(231, 76, 60)') { // Solo si sigue rojo
+                     clickedCard.style.borderColor = '#3498db';
+                }
+            }, 1000);
+        }
+    }
+    
+    // 9. FUNCIÓN: TERMINAR JUEGO
+    function endGame() {
+        isGameActive = false;
+        isGameStarted = false;
+        correctAnswer = '';
+        
+        // Limpiar área y mostrar mensaje final
+        gameArea.innerHTML = `
+            <div id="endGameMessage">
+                <h2>¡Felicidades!</h2>
+                <p>Completaste los ${totalVerbs} verbos.</p>
+            </div>
+        `;
+        
+        progressCounter.textContent = `Juego Terminado`;
+        feedback.textContent = '¡Excelente trabajo!';
+        feedback.className = 'correct';
+        
+        // Configurar el botón para "Jugar de Nuevo"
+        playAudioBtn.textContent = 'Jugar de Nuevo';
+        playAudioBtn.title = 'Jugar de Nuevo';
+        playAudioBtn.className = 'play-again';
+        playAudioBtn.onclick = startGame; // Al hacer clic, se reinicia el juego
+    }
+
+    // 10. INICIALIZACIÓN DEL JUEGO
+    
+    // Asignamos la función de INICIO al botón.
+    playAudioBtn.onclick = startGame;
+</script>
+</html>
